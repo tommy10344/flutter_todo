@@ -8,14 +8,17 @@ import '../task.dart';
 import '../task_list_controller.dart';
 
 class TaskListItem extends StatelessWidget {
+  final Key key;
   final Task task;
   final Function(bool) checkChanged;
 
-  TaskListItem(this.task, this.checkChanged);
+  TaskListItem(this.key, this.task, this.checkChanged) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Card(
+      key: this.key,
+      elevation: 2.0,
       child: ListTile(
         leading: Checkbox(
           value: task.isCompleted,
@@ -41,25 +44,19 @@ class HomePage extends ConsumerWidget {
     final taskListController = watch(taskListProvider.notifier);
 
     return Scaffold(
-      body: CustomScrollView(slivers: <Widget>[
-        SliverAppBar(
-          title: Text("TODO"),
-          leading: TextButton(
-            onPressed: () {
-              print("Edit");
-            },
-            child: Text("Edit"),
-          ),
-        ),
-        SliverList(
-          delegate: SliverChildBuilderDelegate((context, index) {
-            var task = taskList[index];
-            return TaskListItem(task, (isChecked) {
-              taskListController.setIsDone(task.id, isChecked);
-            });
-          }, childCount: taskList.length),
-        ),
-      ]),
+      appBar: AppBar(
+        title: Text("TODO"),
+      ),
+      body: ReorderableListView(
+        children: taskList.map((task) {
+          return TaskListItem(ValueKey(task.id), task, (isChecked) {
+            taskListController.setIsDone(task.id, isChecked);
+          });
+        }).toList(),
+        onReorder: (oldIndex, newIndex) {
+          taskListController.reorder(oldIndex, newIndex);
+        },
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           showModal(context, (_) => AddPage());

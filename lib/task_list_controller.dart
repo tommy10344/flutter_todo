@@ -26,6 +26,16 @@ class TaskListController extends StateNotifier<List<Task>> {
     }).toList();
   }
 
+  void reorder(int oldIndex, int newIndex) {
+    if (oldIndex < newIndex) {
+      newIndex--;
+    }
+    var newState = state;
+    final task = newState.removeAt(oldIndex);
+    newState.insert(newIndex, task);
+    state = newState;
+  }
+
   void delete(String id) {
     state = state.where((task) => task.id != id).toList();
   }
@@ -47,8 +57,6 @@ class TaskListController extends StateNotifier<List<Task>> {
   }
 }
 
-final taskListProvider = StateNotifierProvider((ref) => TaskListController([
-      Task(Uuid().v4(), "task1"),
-      Task(Uuid().v4(), "task2"),
-      Task(Uuid().v4(), "task3"),
-    ]));
+final taskListProvider = StateNotifierProvider<TaskListController, List<Task>>(
+    (ref) => TaskListController(
+        [for (var i = 0; i < 30; i++) Task(Uuid().v4(), "task$i")]));
