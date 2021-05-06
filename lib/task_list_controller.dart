@@ -16,6 +16,16 @@ class TaskListController extends StateNotifier<List<Task>> {
     state = [...state, task];
   }
 
+  void update(Task newTask) {
+    state = state.map((task) {
+      if (newTask.id == task.id) {
+        return newTask;
+      } else {
+        return task;
+      }
+    }).toList();
+  }
+
   void delete(String id) {
     state = state.where((task) => task.id != id).toList();
   }
@@ -37,9 +47,8 @@ class TaskListController extends StateNotifier<List<Task>> {
   }
 }
 
-final taskListProvider =
-    StateNotifierProvider((ref) => TaskListController([
-          Task(Uuid().v4(), "task1"),
-          Task(Uuid().v4(), "task2"),
-          Task(Uuid().v4(), "task3"),
-        ]));
+final taskListProvider = StateNotifierProvider((ref) => TaskListController([
+      Task(Uuid().v4(), "task1"),
+      Task(Uuid().v4(), "task2"),
+      Task(Uuid().v4(), "task3"),
+    ]));

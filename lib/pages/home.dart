@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_todo/pages/edit.dart';
+import 'package:flutter_todo/utilities.dart';
 
 import './add.dart';
 import '../task.dart';
@@ -14,15 +16,21 @@ class TaskListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-        child: CheckboxListTile(
-      title: Text(task.title),
-      value: task.isCompleted,
-      onChanged: (value) {
-        if (value != null) {
-          checkChanged(value);
-        }
-      },
-    ));
+      child: ListTile(
+        leading: Checkbox(
+          value: task.isCompleted,
+          onChanged: (value) {
+            if (value != null) {
+              checkChanged(value);
+            }
+          },
+        ),
+        title: Text(task.title),
+        onTap: () {
+          showModal(context, (_) => EditPage(task));
+        },
+      ),
+    );
   }
 }
 
@@ -54,13 +62,7 @@ class HomePage extends ConsumerWidget {
       ]),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (BuildContext context) {
-                    return AddPage();
-                  },
-                  fullscreenDialog: true));
+          showModal(context, (_) => AddPage());
         },
         tooltip: 'Add',
         child: Icon(Icons.add),
